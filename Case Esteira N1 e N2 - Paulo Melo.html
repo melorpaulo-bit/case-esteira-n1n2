@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case · Otimização da Esteira N1 e N2 · Paulo Melo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-base:#0A1120; --bg-raised:#101A2E; --bg-sunken:#0D1626;
+  --border-subtle:#1B2A42; --border-default:#22344F;
+  --ink-1:#E8EEF7; --ink-2:#A9B8CE; --ink-3:#7C8FA9;
+  --cyan:#22D3EE; --pos:#34D399; --neg:#FB6B6B; --warn:#FBBF24; --violet:#A78BFA;
+  --display:'Rajdhani',system-ui,sans-serif;
+  --body:'Manrope',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden;scroll-padding-top:76px}
+body{background:var(--bg-base);color:var(--ink-2);font-family:var(--body);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw}
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+.reading{max-width:720px}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:2px}
+b,strong{color:var(--ink-1);font-weight:600}
+h2{font-family:var(--display);font-weight:700;font-size:31px;line-height:1.18;color:var(--ink-1);letter-spacing:.01em;margin-bottom:16px;max-width:780px}
+h3{font-family:var(--display);font-weight:700;font-size:20px;line-height:1.4;color:var(--ink-1);margin:30px 0 12px}
+p{margin-bottom:14px}
+section{padding:112px 0 0}
+.eyebrow{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+
+/* ---------- icons ---------- */
+.wa-ic{display:inline-block;vertical-align:-3px;margin-right:7px}
+
+/* ---------- topbar ---------- */
+.topbar{position:fixed;top:0;left:0;right:0;height:64px;z-index:50;display:flex;align-items:center;background:rgba(10,17,32,.74);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border-subtle);transition:height .25s ease}
+.topbar.shrunk{height:52px}
+.topbar .inner{max-width:1120px;margin:0 auto;padding:0 24px;width:100%;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.topbar a{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);white-space:nowrap;display:inline-flex;align-items:center}
+.topbar a:hover{color:var(--cyan);text-decoration:none}
+.topbar .brand{color:var(--ink-1);font-weight:600;letter-spacing:.06em}
+.topbar .right{display:flex;gap:20px;align-items:center;overflow:hidden}
+
+/* ---------- rail nav ---------- */
+.rail{position:fixed;top:50%;transform:translateY(-50%);left:24px;width:180px;z-index:40;display:none}
+@media(min-width:1440px){.rail{display:block}}
+.rail a{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-3);padding:5px 0 5px 14px;border-left:1px solid var(--border-subtle);line-height:1.5}
+.rail a:hover{color:var(--ink-1);text-decoration:none}
+.rail a.active{color:var(--cyan);border-left-color:var(--cyan)}
+
+/* ---------- hero ---------- */
+.hero{min-height:88vh;display:flex;align-items:center;padding:120px 0 56px;position:relative}
+.hero .glow{position:absolute;top:12%;left:8%;width:560px;height:560px;background:radial-gradient(circle,rgba(34,211,238,.06),transparent 65%);pointer-events:none}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,4.6vw,52px);line-height:1.1;color:var(--ink-1);max-width:860px}
+.hero h1 .dim{color:var(--ink-3)}
+.hero .sub{font-size:18px;line-height:1.66;max-width:640px;margin-top:20px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);margin-top:52px;max-width:920px}
+.kpi-row .cell{padding:4px 28px 4px 0;border-right:1px solid var(--border-subtle)}
+.kpi-row .cell+.cell{padding-left:28px}
+.kpi-row .cell:last-child{border-right:none}
+.kpi-row .num{font-family:var(--mono);font-weight:600;font-size:clamp(28px,3.4vw,44px);color:var(--pos);line-height:1.1}
+.kpi-row .num.c{color:var(--cyan)}
+.kpi-row .lbl{font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.45}
+.scopeline{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:20px}
+.hero .footlinks{display:flex;justify-content:space-between;align-items:center;margin-top:56px;max-width:920px}
+.hero .footlinks .go60{font-family:var(--mono);font-size:13.5px}
+.chevron{width:22px;height:22px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(45deg);animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35;transform:rotate(45deg) translate(0,0)}50%{opacity:1;transform:rotate(45deg) translate(4px,4px)}}
+
+/* ---------- snapshot ---------- */
+.band{background:var(--bg-sunken);border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);padding:88px 0;margin-top:112px}
+.snap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:8px}
+.snap-grid p{font-size:15.5px;line-height:1.6;margin:0}
+.minitl{margin-top:56px}
+.mtl-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.mtl-head{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;margin-bottom:10px}
+.mtl-head.p1{color:var(--cyan)}
+.mtl-head.p2{color:var(--violet)}
+.mtl-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px}
+.mtl-bar span{height:100%}
+.mtl-legend{display:flex;flex-direction:column;gap:6px;margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--ink-2);letter-spacing:.02em}
+.mtl-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:0}
+@media(max-width:760px){.mtl-grid{grid-template-columns:1fr}}
+.cta-row{display:flex;gap:14px;align-items:center;margin-top:44px;flex-wrap:wrap}
+.ghost-btn{display:inline-flex;align-items:center;font-family:var(--mono);font-size:13px;color:var(--cyan);border:1px solid rgba(34,211,238,.45);border-radius:6px;padding:11px 22px;background:none;cursor:pointer;transition:background .2s}
+.ghost-btn:hover{background:rgba(34,211,238,.08);text-decoration:none}
+.contact-reveal{display:none;gap:12px;flex-wrap:wrap;margin-top:16px}
+.contact-reveal.open{display:flex}
+.contact-pill{display:inline-flex;align-items:center;font-family:var(--mono);font-size:13px;color:var(--ink-1);border:1px solid var(--border-default);background:var(--bg-raised);border-radius:8px;padding:11px 18px}
+.contact-pill:hover{border-color:var(--cyan);text-decoration:none}
+
+/* ---------- cards / callouts ---------- */
+.base-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:26px 0 8px;max-width:820px}
+.base-card{background:var(--bg-raised);border:1px solid rgba(251,107,107,.4);border-radius:8px;padding:16px 18px}
+.base-card .t{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.base-card .v{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--neg);margin-top:6px}
+.base-card .m{font-size:12.5px;color:var(--ink-3);margin-top:3px;line-height:1.45}
+.pull{border-left:3px solid var(--warn);padding:8px 0 8px 22px;margin:32px 0;font-family:var(--display);font-weight:600;font-size:22px;line-height:1.42;color:var(--ink-1);max-width:640px}
+.pull small{display:block;font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:10px;letter-spacing:.06em}
+.callout{background:var(--bg-raised);border:1px solid var(--border-default);border-left:3px solid var(--neg);border-radius:8px;padding:18px 22px;margin:26px 0;max-width:720px}
+.callout .ct{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--neg);margin-bottom:8px}
+.callout p{margin:0;font-size:15px;line-height:1.6}
+.callout.cyanline{border-left-color:var(--cyan)}
+.callout.cyanline .ct{color:var(--cyan)}
+
+/* ---------- diagnostico ---------- */
+.grid2x2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:26px 0 8px;max-width:820px}
+.mcard{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:10px;padding:20px;transition:transform .2s,box-shadow .2s}
+.mcard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.mcard .ic{width:34px;height:34px;border:1px solid var(--border-default);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--cyan)}
+.mcard h4{font-family:var(--body);font-weight:800;font-size:15px;color:var(--ink-1);margin-bottom:6px}
+.mcard p{font-size:14px;line-height:1.55;color:var(--ink-3);margin:0}
+.funnel{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:28px 0 8px;max-width:1000px}
+.fnode{background:var(--bg-sunken);border:1px solid rgba(34,211,238,.4);border-radius:8px;padding:14px 16px;position:relative}
+.fnode .ft{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.fnode .fd{font-size:13px;color:var(--ink-2);margin-top:5px;line-height:1.5}
+.fnode.ok{border-color:rgba(52,211,153,.5)}
+.fnode.ok .ft{color:var(--pos)}
+
+/* ---------- descobertas compact ---------- */
+.causes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:26px 0 8px;max-width:1000px}
+.cause{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:10px;padding:18px 20px}
+.cause .cn{font-family:var(--mono);font-size:11px;color:var(--neg);letter-spacing:.12em;margin-bottom:8px}
+.cause p{font-size:14px;color:var(--ink-2);margin:0;line-height:1.55}
+.root-strip{background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.4);border-radius:10px;padding:20px 24px;margin:20px 0 8px;max-width:1000px}
+.root-strip .rt{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--cyan);margin-bottom:8px}
+.root-strip p{margin:0;font-size:15.5px;color:var(--ink-1);font-weight:600;line-height:1.6}
+.strategy{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0 8px;max-width:1000px}
+.strategy .s{background:var(--bg-sunken);border:1px solid var(--border-default);border-radius:8px;padding:14px 16px;font-size:14px;color:var(--ink-2)}
+.strategy .s b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--pos);margin-bottom:6px;font-weight:600}
+
+/* ---------- flow diagram ---------- */
+.lane-wrap{margin:30px 0 10px}
+.lane-title{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
+.lane-title.antes{color:var(--neg)}.lane-title.depois{color:var(--pos)}
+.lane{background:var(--bg-sunken);border-radius:12px;padding:22px}
+.lane.antes{border:1px solid rgba(251,107,107,.4)}
+.lane.depois{border:1px solid rgba(52,211,153,.4)}
+.flow{display:flex;align-items:stretch}
+.node{flex:1;background:var(--bg-raised);border:1px solid var(--border-default);border-radius:8px;padding:12px 14px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease}
+.inview .node{opacity:1;transform:none}
+.inview .node:nth-of-type(1){transition-delay:0s}
+.inview .node:nth-of-type(2){transition-delay:.12s}
+.inview .node:nth-of-type(3){transition-delay:.24s}
+.inview .node:nth-of-type(4){transition-delay:.36s}
+.inview .node:nth-of-type(5){transition-delay:.48s}
+.inview .node:nth-of-type(6){transition-delay:.6s}
+.node .nt{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.node .nd{font-size:13px;color:var(--ink-1);margin-top:5px;line-height:1.45}
+.node .time{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;margin-top:8px;padding:2px 8px;border-radius:4px}
+.time.bad{background:rgba(251,107,107,.14);color:var(--neg)}
+.time.good{background:rgba(52,211,153,.14);color:var(--pos)}
+.arrow{display:flex;align-items:center;padding:0 8px;color:var(--ink-3);font-family:var(--mono);font-size:15px;flex:none}
+.arrow::before{content:"→"}
+.loop{margin-top:14px;border:1px dashed rgba(251,107,107,.55);border-radius:8px;padding:10px 16px;font-family:var(--mono);font-size:12px;color:var(--neg);letter-spacing:.04em}
+.loop.fwd{border-color:rgba(52,211,153,.55);color:var(--pos)}
+@media(max-width:760px){
+  .flow{flex-direction:column}
+  .arrow{padding:6px 0;justify-content:center}
+  .arrow::before{content:"↓"}
+}
+
+/* ---------- accordion ---------- */
+.acc{border:1px solid var(--border-default);border-radius:10px;overflow:hidden;margin:26px 0 8px;max-width:820px}
+.acc-item+.acc-item{border-top:1px solid var(--border-subtle)}
+.acc-head{width:100%;background:var(--bg-raised);border:none;color:var(--ink-1);display:flex;align-items:center;gap:16px;padding:15px 20px;cursor:pointer;font-family:var(--body);text-align:left}
+.acc-head:hover{background:#13203a}
+.acc-head .idx{font-family:var(--mono);font-size:13px;color:var(--cyan);width:26px;flex:none}
+.acc-head .name{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.05em;text-transform:uppercase;flex:1}
+.acc-head .chev{width:9px;height:9px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(45deg);transition:transform .25s;flex:none;margin-left:4px}
+.acc-item.open .chev{transform:rotate(-135deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--bg-sunken)}
+.acc-body .pad{padding:16px 22px 20px 62px;font-size:14px;line-height:1.6;color:var(--ink-3)}
+
+/* ---------- pair ---------- */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:26px 0 8px;max-width:820px}
+.pair .side{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:10px;padding:20px}
+.pair .side .pt{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+.pair .side.a .pt{color:var(--neg)}.pair .side.b .pt{color:var(--pos)}
+.pair .side p{font-size:14.5px;color:var(--ink-2);margin:0;line-height:1.6}
+
+/* ---------- antifraude ---------- */
+.proto{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 8px}
+.proto .pcard{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:10px;padding:20px}
+.proto .pcard .ph{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--cyan);margin-bottom:10px}
+.proto .pcard p{font-size:14px;line-height:1.58;color:var(--ink-3);margin:0}
+.liciflow{background:var(--bg-sunken);border:1px solid var(--border-default);border-radius:12px;padding:22px;margin:28px 0 8px}
+.liciflow .lt{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:16px}
+.liciflow .node{opacity:1;transform:none}
+.liciflow .node .nd{font-size:12.5px}
+.branch{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.branch .b{border-radius:8px;padding:11px 16px;font-family:var(--mono);font-size:12px;letter-spacing:.03em}
+.branch .ok{border:1px dashed rgba(52,211,153,.55);color:var(--pos)}
+.branch .no{border:1px dashed rgba(251,107,107,.55);color:var(--neg)}
+.artefato{background:var(--bg-sunken);border:1px solid var(--border-default);border-radius:12px;padding:26px;margin:26px 0 8px;max-width:720px}
+.artefato .at{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
+.artefato ol{list-style:none;counter-reset:art}
+.artefato li{counter-increment:art;font-size:14px;color:var(--ink-2);padding:9px 0;border-bottom:1px solid var(--border-subtle);display:flex;gap:14px;line-height:1.55}
+.artefato li:last-child{border-bottom:none}
+.artefato li::before{content:counter(art,decimal-leading-zero);font-family:var(--mono);font-size:12px;color:var(--cyan);flex:none;padding-top:2px}
+.artefato .sint{font-style:italic;color:var(--ink-1)}
+.impact3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0 8px}
+.impact3 .i{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:8px;padding:16px 18px;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.impact3 .i b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--cyan);margin-bottom:6px}
+
+/* ---------- tables ---------- */
+.tbl{background:var(--bg-sunken);border:1px solid var(--border-default);border-radius:8px;overflow:hidden;margin:24px 0 8px;max-width:820px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:12px 16px;border-bottom:1px solid var(--border-default)}
+td{padding:12px 16px;border-bottom:1px solid var(--border-subtle);vertical-align:top;line-height:1.55}
+tr:last-child td{border-bottom:none}
+td.mono{font-family:var(--mono);font-size:13px;white-space:nowrap}
+td.efx-ok{color:var(--pos)}td.efx-mid{color:var(--warn)}td.efx-bad{color:var(--neg)}
+.bridge tr:hover td{background:rgba(34,211,238,.04)}
+.bridge td:first-child{color:var(--ink-3)}
+.bridge td:last-child{color:#BFEAF4}
+.bridge .arr{color:var(--cyan);font-family:var(--mono);width:44px;text-align:center}
+
+/* ---------- pesos grid ---------- */
+.pesos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0 8px;max-width:900px}
+.peso-c{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:8px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.peso-c .pn{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-1)}
+.peso-c .pv{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--cyan);white-space:nowrap}
+.peso-c.zero{grid-column:1 / -1;border-color:rgba(34,211,238,.5)}
+.peso-c.zero .desc{font-size:13px;color:var(--ink-3);line-height:1.5;flex:1;margin-left:14px}
+
+/* ---------- ring + chart ---------- */
+.gov-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;margin-top:30px}
+.ring-wrap{display:flex;justify-content:center}
+.ring-list{display:none}.qcard{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.55;color:var(--ink-2);display:flex;gap:14px}
+.qcard .qn{font-family:var(--mono);font-size:12px;color:var(--cyan);flex:none;padding-top:2px}
+.chart{max-width:560px;margin:22px 0 8px}
+.chart .bars{display:flex;align-items:flex-end;gap:22px;height:210px;border-bottom:1px solid var(--border-default);padding:0 8px}
+.chart .b{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.chart .fill{width:100%;max-width:86px;background:rgba(34,211,238,.75);border-radius:6px 6px 0 0;height:0;transition:height 1s cubic-bezier(.2,.7,.2,1)}
+.chart .b.meta .fill{background:transparent;border:2px dashed rgba(251,191,36,.6);border-bottom:none}
+.chart .val{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--ink-1);margin-bottom:8px}
+.chart .b.meta .val{color:var(--warn)}
+.chart .axis{display:flex;gap:22px;padding:10px 8px 0;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em}
+.chart .axis span{flex:1;text-align:center;max-width:calc(86px + 22px)}
+
+/* ---------- results ---------- */
+.wall{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 8px}
+.wall.five{grid-template-columns:repeat(3,1fr)}
+.wcard{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:12px;padding:22px;transition:transform .2s,box-shadow .2s}
+.wcard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.wcard .big{font-family:var(--mono);font-weight:600;font-size:34px;color:var(--pos);line-height:1.1}
+.wcard .fromto{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:6px}
+.wcard .wl{font-size:13.5px;color:var(--ink-2);margin-top:9px;line-height:1.5}
+.wcard .scope{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:11px}
+.sla-strip{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.4);border-radius:10px;padding:20px 24px;margin:24px 0 8px;font-family:var(--display);font-weight:600;font-size:20px;color:var(--ink-1);line-height:1.45;max-width:820px}
+.regua{font-family:var(--display);font-weight:600;font-size:19px;color:var(--ink-1);max-width:720px;margin-top:26px;line-height:1.5}
+
+/* ---------- escala ---------- */
+.esc-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:44px;align-items:start}
+.bound{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:12px;overflow:hidden}
+.bound .half{padding:20px 22px}
+.bound .half+.half{border-top:1px solid var(--border-subtle)}
+.bound .bt{font-family:var(--mono);font-size:11px;letter-spacing:.14em;margin-bottom:10px}
+.bound .half.mine .bt{color:var(--cyan)}.bound .half.team .bt{color:var(--ink-3)}
+.bound ul{list-style:none}
+.bound li{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);padding:4px 0;line-height:1.5}
+.iaflow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 8px}
+.iaflow .n{background:var(--bg-sunken);border:1px solid rgba(34,211,238,.4);border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.iaflow .n b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--cyan);margin-bottom:5px}
+
+/* ---------- timeline 12m ---------- */
+.tl12{margin:30px 0 8px}
+.tl12 .months{display:grid;grid-template-columns:repeat(12,1fr);gap:0;font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-bottom:6px}
+.tl12 .months span{text-align:center}
+.tl12 .track{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;height:14px}
+.tl12 .track i{border-radius:3px}
+.f1a{background:rgba(34,211,238,.6)}
+.f1b{background:rgba(251,191,36,.65)}
+.f1c{background:rgba(52,211,153,.6)}
+.f2a{background:rgba(167,139,250,.6)}
+.f2b{background:rgba(251,191,36,.65)}
+.f2c{background:rgba(52,211,153,.6)}
+.tl12 .legend{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.tl12 .phase{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:10px;padding:18px 20px}
+.tl12 .phase .ph-t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;margin-bottom:12px}
+.tl12 .phase.p1 .ph-t{color:var(--cyan)}
+.tl12 .phase.p2 .ph-t{color:var(--violet)}
+.tl12 .phase ul{list-style:none}
+.tl12 .phase li{font-size:13.5px;color:var(--ink-2);padding:6px 0;border-bottom:1px solid var(--border-subtle);display:flex;gap:12px;line-height:1.5}
+.tl12 .phase li:last-child{border-bottom:none}
+.tl12 .phase li .mm{font-family:var(--mono);font-size:11px;color:var(--ink-3);flex:none;width:74px;padding-top:2px}
+.tl12 .phase li .dot{width:9px;height:9px;border-radius:50%;flex:none;margin-top:6px}
+.pdca{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--cyan);border:1px solid rgba(34,211,238,.45);border-radius:4px;padding:2px 7px;white-space:nowrap;margin-left:auto;align-self:flex-start;margin-top:3px}
+.track-dmaic{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:6px;font-family:var(--mono);font-size:10px;letter-spacing:.08em}
+.track-dmaic span{text-align:center;border:1px dashed var(--border-default);border-radius:4px;padding:3px 0;color:var(--ink-2)}
+.track-dmaic .dma{grid-column:1/3;border-color:rgba(34,211,238,.45);color:var(--cyan)}
+.track-dmaic .imp{grid-column:3/7;border-color:rgba(52,211,153,.45);color:var(--pos)}
+.track-dmaic .ctl{grid-column:7/13;border-color:rgba(167,139,250,.45);color:var(--violet)}
+.marcos{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.marco{font-family:var(--mono);font-size:11.5px;color:var(--ink-1);border:1px solid rgba(34,211,238,.4);border-radius:6px;padding:7px 12px;background:rgba(34,211,238,.05)}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:30px 0 8px;max-width:900px}
+.role{background:var(--bg-raised);border:1px solid var(--border-default);border-radius:10px;padding:20px}
+.role .rt{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
+.role.mine .rt{color:var(--cyan)}.role.team .rt{color:var(--ink-3)}
+.role ul{list-style:none}
+.role li{font-size:14px;color:var(--ink-2);padding:6px 0;border-bottom:1px solid var(--border-subtle);line-height:1.5}
+.role li:last-child{border-bottom:none}
+
+/* ---------- glossary tooltip ---------- */
+.gloss{border-bottom:1px dotted var(--ink-3);cursor:help;position:relative;color:var(--ink-1)}
+.gloss:hover::after,.gloss:focus::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 8px);background:#15233E;color:var(--ink-1);border:1px solid var(--border-default);border-radius:8px;padding:10px 14px;font-size:12.5px;line-height:1.5;width:280px;z-index:30;font-family:var(--body);font-weight:400;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+
+/* ---------- footer ---------- */
+footer{padding:104px 0 72px}
+.author{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;background:var(--bg-raised);border:1px solid var(--border-default);border-radius:12px;padding:26px 28px}
+.author .name{font-family:var(--display);font-weight:700;font-size:21px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-1)}
+.author .role-l{font-size:13.5px;color:var(--ink-3);margin-top:5px;max-width:520px;line-height:1.55}
+.flinks{display:flex;gap:10px;flex-wrap:wrap}
+.flinks a{font-family:var(--mono);font-size:12.5px;color:var(--cyan);border:1px solid rgba(34,211,238,.4);border-radius:6px;padding:9px 15px;display:inline-flex;align-items:center}
+.flinks a:hover{background:rgba(34,211,238,.08);text-decoration:none}
+.disclaimer{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:20px;line-height:1.7;max-width:820px}
+
+/* ---------- reveal ---------- */
+.js .rv{opacity:0;transform:translateY(12px);transition:opacity .4s ease,transform .4s ease}
+.js .rv.in{opacity:1;transform:none}
+
+/* ---------- mobile ---------- */
+@media(max-width:900px){
+  .gov-grid,.esc-grid{grid-template-columns:1fr}
+  .proto,.impact3,.strategy,.causes{grid-template-columns:1fr}
+  .funnel{grid-template-columns:1fr 1fr}
+  .wall,.wall.five{grid-template-columns:1fr 1fr}
+  .snap-grid{grid-template-columns:1fr;gap:26px}
+  .grid2x2,.pair,.base-row,.pesos,.role-grid{grid-template-columns:1fr}
+  .tl12 .legend,.branch,.iaflow{grid-template-columns:1fr}
+  .ring-wrap svg{width:100%;height:auto;max-width:320px}
+}
+@media(max-width:640px){
+  body{font-size:16px}
+  .track-dmaic{display:none}
+  section{padding:76px 0 0}
+  .band{padding:60px 0;margin-top:76px}
+  h2{font-size:25px}
+  .hero{min-height:auto;padding:126px 0 44px}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .kpi-row .cell{border-right:none;border-bottom:1px solid var(--border-subtle);padding:14px 8px}
+  .kpi-row .cell+.cell{padding-left:8px}
+  .kpi-row .cell:nth-child(odd){border-right:1px solid var(--border-subtle);padding-right:16px}
+  .kpi-row .cell:nth-child(even){padding-left:16px}
+  .kpi-row .cell:nth-child(3),.kpi-row .cell:nth-child(4){border-bottom:none}
+  .wall,.wall.five{grid-template-columns:1fr}
+  .funnel{grid-template-columns:1fr}
+  .topbar .right{gap:12px}
+  .topbar .hidem{display:none}
+  .gloss:hover::after,.gloss:focus::after{width:220px}
+  .tl12 .months{font-size:8px}
+  .liciflow{padding:16px}
+  .topbar .brand{display:none}
+  .glow{max-width:100vw;left:0}
+  .tl12 .phase li .mm{width:58px}
+  .tl12 .phase{padding:16px 14px}
+  td.mono{white-space:normal}
+  .tbl table,.tbl tbody,.tbl tr,.tbl td,.tbl th{display:block;width:100%}
+  .tbl thead{display:none}
+  .tbl tr{border-bottom:1px solid var(--border-default);padding:6px 0}
+  .tbl tr:last-child{border-bottom:none}
+  .tbl td{border-bottom:none;padding:6px 16px}
+  .tbl td::before{content:attr(data-label);display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+  .bridge .arr{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .js .rv{opacity:1;transform:none}
+  .inview .node{opacity:1;transform:none}
+}
+@media print{
+  :root{--bg-base:#fff;--bg-raised:#fff;--bg-sunken:#fff;--border-subtle:#ccc;--border-default:#aaa;--ink-1:#111;--ink-2:#222;--ink-3:#555;--cyan:#0E7490;--pos:#047857;--neg:#B91C1C;--warn:#92400E;--violet:#6D28D9}
+  .topbar,.rail,.chevron,.ghost-btn,.cta-row{display:none}
+  section{padding:32px 0 0}
+  .hero{min-height:auto;padding:20px 0}
+  .js .rv{opacity:1;transform:none}
+  .acc-body{max-height:none!important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.3-1.39c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.9-4.44 9.9-9.9 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 18.03h-.01c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.26 8.26 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.17.24-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.27"/></symbol>
+</defs></svg>
+
+<div class="topbar" id="topbar">
+  <div class="inner">
+    <span class="brand" style="font-family:var(--mono);font-size:12px;letter-spacing:.1em">PAULO MELO · OTIMIZAÇÃO DA ESTEIRA N1/N2</span>
+    <div class="right">
+      <a href="https://wa.me/5584999097812" target="_blank" rel="noopener"><svg class="wa-ic" width="15" height="15"><use href="#wa"/></svg>84 99909-7812</a>
+      <a href="mailto:melo.rpaulo@gmail.com" class="hidem">melo.rpaulo@gmail.com</a>
+      <a href="https://www.linkedin.com/in/paulo-ricardo-melo/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</div>
+
+<nav class="rail" aria-label="Seções">
+  <a href="#problema">Problema</a>
+  <a href="#diagnostico">Diagnóstico</a>
+  <a href="#redesenho">Redesenho</a>
+  <a href="#parecer">O parecer</a>
+  <a href="#antifraude">Antifraude</a>
+  <a href="#resultados">Resultados</a>
+  <a href="#qualidade">Qualidade</a>
+  <a href="#escala">Escala com IA</a>
+  <a href="#linha">12 meses</a>
+  <a href="#transferencia">Fraud Ops</a>
+</nav>
+
+<header class="hero">
+  <div class="glow"></div>
+  <div class="container">
+    <div class="eyebrow">Case · Crédito &amp; Fraud Ops · Process Excellence</div>
+    <h1>Uma tentativa de fraude de R$ 400 mil quase passou pela mesa.<br><span class="dim">O que ela revelou redesenhou a esteira inteira.</span></h1>
+    <p class="sub">Otimização da esteira de análise de crédito e prevenção à fraude N1 e N2 em um <span class="gloss" tabindex="0" data-tip="Fundo de Investimento em Direitos Creditórios: fundo que compra recebíveis (duplicatas, contratos) de empresas, antecipando caixa ao cedente.">FIDC</span> multicedente. Iniciativa autoral conduzida como Analista de Prevenção à Fraude, do diagnóstico à escala com IA, em 12 meses.</p>
+    <div class="kpi-row">
+      <div class="cell"><div class="num" data-count="45" data-prefix="−" data-suffix="%">−45%</div><div class="lbl">tempo de análise N1<br>45min &rarr; 25min</div></div>
+      <div class="cell"><div class="num" data-count="54" data-prefix="−" data-suffix="%">−54%</div><div class="lbl">tempo de análise N2<br>11min &rarr; &lt;5min</div></div>
+      <div class="cell"><div class="num">11%&rarr;&lt;3%</div><div class="lbl">desistência de operações em mesa</div></div>
+      <div class="cell"><div class="num c" data-count="92" data-suffix="/100">92/100</div><div class="lbl">qualidade operacional no 3º mês do programa</div></div>
+    </div>
+    <div class="scopeline">Mensuração: 3 primeiros meses pós-implantação de cada fase, na operação completa.</div>
+    <div class="footlinks">
+      <a class="go60" href="#s60">Em 60 segundos te explico &darr;</a>
+      <div class="chevron" aria-hidden="true"></div>
+    </div>
+  </div>
+</header>
+
+<div class="band" id="s60">
+  <div class="container">
+    <div class="eyebrow">Em 60 segundos</div>
+    <div class="snap-grid">
+      <div class="rv">
+        <div class="eyebrow" style="color:var(--neg)">Problema</div>
+        <p>Fluxo único para mais de 90% das operações, parecer sem padrão e caso devolvido voltando ao fim da fila. Uma tentativa de fraude de R$ 400 mil quase passou. O cliente cansava de esperar e levava a operação para o concorrente.</p>
+      </div>
+      <div class="rv">
+        <div class="eyebrow">O que fiz</div>
+        <p>Auditei a esteira em campo e nos dados, redesenhei a verificação por grau de risco, criei o protocolo antifraude de validação do ativo, padronizei o parecer em 7 pilares, eliminei o retorno ao fim da fila e criei o programa de qualidade que virou indicador oficial da operação. Estrutura DMAIC completa, da linha de base ao plano de controle.</p>
+      </div>
+      <div class="rv">
+        <div class="eyebrow" style="color:var(--pos)">Resultado</div>
+        <p>Análise 45% mais rápida no N1 e 54% no N2, com os dois níveis dentro do SLA pela primeira vez. Desistência de 11% para menos de 3%, retenção e receita em alta nas carteiras do projeto e qualidade em 92/100 no terceiro mês do programa.</p>
+      </div>
+    </div>
+    <div class="minitl rv">
+      <div class="mtl-grid">
+        <div>
+          <div class="mtl-head p1">FASE 1 · ESTEIRA · MESES 1 A 6</div>
+          <div class="mtl-bar"><span class="f1a" style="width:33.3%"></span><span class="f1b" style="width:16.7%"></span><span class="f1c" style="width:50%"></span></div>
+          <div class="mtl-legend">
+            <span><i class="f1a"></i>Dados e diagnóstico · 2 meses</span>
+            <span><i class="f1b"></i>Testes por amostragem · 1 mês</span>
+            <span><i class="f1c"></i>Implementação e mensuração · 3 meses</span>
+          </div>
+        </div>
+        <div>
+          <div class="mtl-head p2">FASE 2 · QUALIDADE · MESES 7 A 12</div>
+          <div class="mtl-bar"><span class="f2a" style="width:33.3%"></span><span class="f2b" style="width:16.7%"></span><span class="f2c" style="width:50%"></span></div>
+          <div class="mtl-legend">
+            <span><i class="f2a"></i>Dados e metodologia · 2 meses</span>
+            <span><i class="f2b"></i>Testes por amostragem · 1 mês</span>
+            <span><i class="f2c"></i>Implementação e mensuração · 3 meses</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-row rv">
+      <button class="ghost-btn" id="ctaContato" aria-expanded="false">Falar comigo</button>
+      <a class="ghost-btn" href="#problema">Conhecer no detalhe &darr;</a>
+    </div>
+    <div class="contact-reveal" id="contactReveal">
+      <a class="contact-pill" href="https://wa.me/5584999097812" target="_blank" rel="noopener"><svg class="wa-ic" width="16" height="16" style="color:#25D366"><use href="#wa"/></svg>+55 84 99909-7812</a>
+      <a class="contact-pill" href="mailto:melo.rpaulo@gmail.com">melo.rpaulo@gmail.com</a>
+      <a class="contact-pill" href="https://www.linkedin.com/in/paulo-ricardo-melo/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</div>
+
+<section id="problema">
+  <div class="container">
+    <div class="eyebrow">01 · Contexto e problema · DMAIC: DEFINE + MEASURE</div>
+    <h2>Duas linhas decidiam cada operação. Entre elas, uma fila. Era nela que o dinheiro parava.</h2>
+    <div class="reading">
+      <p class="rv">O N1 (gestores de carteira e analistas de crédito) define formato, valor e taxa, negocia com o cliente e emite o parecer. O N2 (crédito e prevenção à fraude, maior senioridade) faz a checagem final e libera o pagamento. Mais de 90% das operações seguiam o mesmo fluxo, sem distinção de valor, segmento, grau de risco, concentração ou tempo de cadastro. O parecer chegava livre ao N2, que devolvia pedindo ajustes, e a operação corrigida voltava ao fim da fila. Retrabalho puro: a operação reprocessava o caso e o cliente esperava de novo.</p>
+    </div>
+    <div class="base-row">
+      <div class="base-card rv"><div class="t">Tempo médio de análise N1</div><div class="v">45min</div><div class="m">SLA: até 30min · estourado</div></div>
+      <div class="base-card rv"><div class="t">Tempo médio de análise N2</div><div class="v">11min</div><div class="m">SLA: até 5min · estourado</div></div>
+      <div class="base-card rv"><div class="t">Desistência em mesa</div><div class="v">11%</div><div class="m">cliente retirava a proposta e operava com o concorrente</div></div>
+    </div>
+    <div class="reading">
+      <div class="pull rv">"Era a chave de fenda entre as engrenagens, travando as operações na fila. Ninguém falava a mesma língua."
+        <small>DO MEU DIAGNÓSTICO ORIGINAL DO PROBLEMA</small>
+      </div>
+      <div class="callout rv">
+        <div class="ct">⚠ TENTATIVA DE FRAUDE · R$ 400 MIL</div>
+        <p>Quase passou pela mesa. Contida antes da perda, mas sem mecanismo estrutural por trás. <a href="#antifraude">A dissecção completa está na camada antifraude.</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="diagnostico">
+  <div class="container">
+    <div class="eyebrow">02 · Diagnóstico, investigação e estratégia · DMAIC: ANALYZE</div>
+    <h2>Realizei uma imersão na operação antes de propor qualquer mudança.</h2>
+    <div class="grid2x2">
+      <div class="mcard rv"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div><h4>Campo</h4><p>Shadowing neutro nos dois níveis: decisão, ferramenta e comunicação observadas no dia comum de mesa.</p></div>
+      <div class="mcard rv"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div><h4>Entrevistas estratificadas</h4><p>Um analista por senioridade (Jr, Pl, Sr) em cada nível, mais os gestores diretos, em conversas individuais por videochamada (Meet).</p></div>
+      <div class="mcard rv"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><h4>Base dos últimos 12 meses</h4><p>Excel e Power BI: desistência, safra, fraude confirmada, volume não operado e perda em clientes ativos.</p></div>
+      <div class="mcard rv"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div><h4>Voz do cliente (VOC)</h4><p>Ação estruturada em colaboração com CS, por telefone e canais digitais, sobre clientes selecionados nos dados.</p></div>
+    </div>
+    <div class="funnel rv">
+      <div class="fnode"><div class="ft">Dados + nomes</div><div class="fd">Clientes mapeados na base histórica</div></div>
+      <div class="fnode"><div class="ft">Camada 1</div><div class="fd">Inativos operando com concorrentes (endividamento, SCR, birôs)</div></div>
+      <div class="fnode"><div class="ft">Camada 2</div><div class="fd">Ativos reduzindo carteira interna, mantendo busca de crédito no mercado</div></div>
+      <div class="fnode ok"><div class="ft">Causa confirmada</div><div class="fd">A perda era recuperável: o cliente não sumiu do mercado, sumiu da nossa fila</div></div>
+    </div>
+    <div class="causes">
+      <div class="cause rv"><div class="cn">CAUSA 1</div><p>Fluxo único inflava o tempo de análise.</p></div>
+      <div class="cause rv"><div class="cn">CAUSA 2</div><p>Parecer sem padrão gerava devolução e retrabalho.</p></div>
+      <div class="cause rv"><div class="cn">CAUSA 3</div><p>Espera + fim de fila empurravam o cliente ao concorrente.</p></div>
+    </div>
+    <div class="root-strip rv">
+      <div class="rt">A RAIZ</div>
+      <p>N1 e N2 avaliavam a mesma operação com réguas diferentes. E o parecer livre não era só ineficiente: era risco de controle, com a tentativa de R$ 400 mil como prova.</p>
+    </div>
+    <div class="strategy">
+      <div class="s rv"><b>ENTRADA</b>Verificação proporcional ao risco.</div>
+      <div class="s rv"><b>MEIO</b>Padrão único de parecer.</div>
+      <div class="s rv"><b>SAÍDA</b>Fim do retrabalho de fila. Tudo no CRM existente, com controle desde o início.</div>
+    </div>
+  </div>
+</section>
+
+<section id="redesenho">
+  <div class="container">
+    <div class="eyebrow">03 · Redesenho · Triagem por risco · DMAIC: IMPROVE</div>
+    <h2>O esforço de verificação passou a ser definido pelo risco, não pelo hábito.</h2>
+    <div class="reading">
+      <p class="rv">Redesenho orientado por Lean: motores e checagens por segmento, tipo de cliente e grau de risco, registrados em POP; processos disfuncionais desativados; status e andamento da fila acompanhados em tempo real pela gestão e diretoria, gestão à vista que transformou o SLA em indicador vivo.</p>
+    </div>
+    <div class="lane-wrap rv" data-flow>
+      <div class="lane-title antes">▼ Antes · fluxo único, parecer livre, retorno ao fim da fila</div>
+      <div class="lane antes">
+        <div class="flow">
+          <div class="node"><div class="nt">Entrada</div><div class="nd">Operação cai na mesa</div></div>
+          <div class="arrow"></div>
+          <div class="node"><div class="nt">N1</div><div class="nd">"Olha tudo" em mais de 90% dos casos</div><span class="time bad">análise: 45min</span></div>
+          <div class="arrow"></div>
+          <div class="node"><div class="nt">Parecer</div><div class="nd">Livre, com poucos parâmetros mínimos</div></div>
+          <div class="arrow"></div>
+          <div class="node"><div class="nt">N2</div><div class="nd">Tenta reconstruir o raciocínio do N1</div><span class="time bad">análise: 11min</span></div>
+        </div>
+        <div class="loop">&#8617; DEVOLUÇÃO · a operação corrigida volta ao FIM da fila e espera de novo</div>
+      </div>
+    </div>
+    <div class="lane-wrap rv" data-flow>
+      <div class="lane-title depois">▲ Depois · triagem por risco, parecer padronizado, follow-up prioritário</div>
+      <div class="lane depois">
+        <div class="flow">
+          <div class="node"><div class="nt">Triagem</div><div class="nd">Segmento, tipo de cliente e grau de risco definem o fluxo (POP)</div></div>
+          <div class="arrow"></div>
+          <div class="node"><div class="nt">N1</div><div class="nd">Roda apenas os motores e checagens do perfil do caso</div><span class="time good">análise: 25min</span></div>
+          <div class="arrow"></div>
+          <div class="node"><div class="nt">Parecer</div><div class="nd">7 pilares obrigatórios, com números e evidência</div></div>
+          <div class="arrow"></div>
+          <div class="node"><div class="nt">N2</div><div class="nd">Decide sobre parecer pronto para decisão</div><span class="time good">análise: &lt;5min</span></div>
+        </div>
+        <div class="loop fwd">&#10548; FOLLOW-UP · ajuste sinalizado retorna DIRETO ao N2, conferência apenas do pendente</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="parecer">
+  <div class="container">
+    <div class="eyebrow">04 · Redesenho · O parecer de 7 pilares</div>
+    <h2>O documento que decide a operação.</h2>
+    <div class="reading">
+      <p class="rv">O parecer é o que o N1 envia ao N2 com a defesa técnica da operação: é sobre ele que o N2 decide pagar ou devolver. Passou a seguir estrutura fixa em 7 pilares (criação autoral), cada um respondendo perguntas objetivas, com números e evidência. A reprovação seguiu autonomia do N1, com auditoria posterior de conformidade.</p>
+    </div>
+    <div class="acc rv" id="accordion">
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false"><span class="idx">01</span><span class="name">Visão Controladoria</span><span class="chev"></span></button>
+        <div class="acc-body"><div class="pad">Situação das confirmações, existência de gestão de risco, confirmação prévia ou não, <span class="gloss" tabindex="0" data-tip="Parcela do limite de antecipação disponível para o cedente operar.">tranche</span> disponível em carteira (e quantos dias) ou, se a tranche está tomada, se a flexibilização é viável e por quê.</div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false"><span class="idx">02</span><span class="name">Visão Cobrança</span><span class="chev"></span></button>
+        <div class="acc-body"><div class="pad">Vencidos e perspectiva de resolução: em operação ou programada. Se em operação, a forma da recompra, via transferência, <span class="gloss" tabindex="0" data-tip="Conta de custódia que centraliza os recebimentos, controlada pelo fundo.">escrow</span>, direto no <span class="gloss" tabindex="0" data-tip="Documento que lista os títulos (recebíveis) de uma operação de antecipação.">borderô</span> ou caixa 93, sempre com título e valor recomprado identificados.</div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false"><span class="idx">03</span><span class="name">Visão Financeira</span><span class="chev"></span></button>
+        <div class="acc-body"><div class="pad">Pendência financeira, tarifa ou ADI a débito: resolvida em operação (já lançada no borderô), transferida pelo <span class="gloss" tabindex="0" data-tip="A empresa que vende seus recebíveis ao fundo para antecipar caixa.">cedente</span> ou recomprada na próxima operação, com tarifa e valor identificados.</div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false"><span class="idx">04</span><span class="name">Visão Cedente</span><span class="chev"></span></button>
+        <div class="acc-body"><div class="pad">Números na mesa: SCR, evolução de compromissos (VADU), processos e anotações com empresas do ramo, faturamento e endividamento, e o comportamento do cedente nas resoluções da carteira.</div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false"><span class="idx">05</span><span class="name">Visão Crédito</span><span class="chev"></span></button>
+        <div class="acc-body"><div class="pad"><span class="gloss" tabindex="0" data-tip="O devedor do recebível: quem vai pagar o título que o fundo comprou.">Sacado</span> a sacado, sempre que novo: média Serasa, SCR, CNAE, verificação de fachada e presença digital, vínculo com o cedente e, quando necessário, capacidade média de pagamento. Sacados recorrentes e pulverizados: resumo consolidado.</div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false"><span class="idx">06</span><span class="name">Taxa Efetiva</span><span class="chev"></span></button>
+        <div class="acc-body"><div class="pad">Com o precificador, a análise deixa de usar a média histórica do BI: o analista cruza prazo e valores mais recentes com o cenário atual da carteira. Precificação abaixo da efetiva esperada exige justificativa no parecer.</div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false"><span class="idx">07</span><span class="name">Favorável ou Não</span><span class="chev"></span></button>
+        <div class="acc-body"><div class="pad">Posicionamento explícito e obrigatório do analista sobre a operação.</div></div>
+      </div>
+    </div>
+    <h3>Follow-up: o caso corrigido deixou de voltar ao fim da fila</h3>
+    <div class="reading"><p class="rv">Em colaboração com dev e produto, o parecer devolvido ganhou o status de follow-up: o N1 ajusta, sinaliza atualização realizada e a operação retorna direto ao N2, que confere apenas o pendente.</p></div>
+    <div class="pair">
+      <div class="side a rv"><div class="pt">&#8617; Antes</div><p>Novo parecer em texto, subida para a fila, retorno ao final. A operação já corrigida esperava mais do que uma operação nova.</p></div>
+      <div class="side b rv"><div class="pt">&#10548; Depois</div><p>Atualização realizada, retorno direto ao N2, conferência apenas do pendente. Liberação em menos tempo que o próprio SLA de 5 minutos.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="antifraude">
+  <div class="container">
+    <div class="eyebrow">05 · A camada antifraude</div>
+    <h2>A tentativa de R$ 400 mil que virou protocolo.</h2>
+    <div class="reading">
+      <p class="rv">Durante a auditoria, dissequei uma tentativa de fraude de R$ 400 mil que quase passou pela mesa. Contida antes da perda, mas sem mecanismo estrutural por trás: virou o divisor de águas do projeto.</p>
+      <p class="rv">A análise cobria apenas duas etapas: contrato no PNCP e assinatura no ICP-Brasil. O restante ficava por conta da confiança no histórico: cliente fidelizado, meses de volume alto, nenhum sinistro. O contrato era autêntico. O ativo estava morto: o <span class="gloss" tabindex="0" data-tip="Ato pelo qual o ente público reserva o valor orçamentário para pagar um contrato. 'Liquidado' significa obrigação já reconhecida, etapa anterior ao pagamento.">empenho</span> já comprometido por penhoras e cessões anteriores que a consulta rápida ignorava.</p>
+      <div class="callout rv">
+        <div class="ct">CONCLUSÃO REGISTRADA NO DIAGNÓSTICO</div>
+        <p>Ausência de verificação crítica do ativo, mascarada pela falsa segurança da fidelidade. Fraudador profissional constrói confiança antes de atacar.</p>
+      </div>
+      <p class="rv">A correção não adicionou burocracia: substituí a confiança no histórico por verificação digital ágil. A segurança virou o próprio motor de liberação.</p>
+    </div>
+    <div class="proto">
+      <div class="pcard rv"><div class="ph">01 · LIQUIDEZ EM TEMPO REAL</div><p>Consulta pública ao Portal da Transparência (dados do SIAFI). Empenho Liquidado é a evidência que basta: 30 segundos de consulta no lugar da investigação por telefone.</p></div>
+      <div class="pcard rv"><div class="ph">02 · BLINDAGEM VIA TRAVA</div><p>Notificação de cessão com <span class="gloss" tabindex="0" data-tip="Mecanismo que fixa a conta bancária de recebimento do contrato, com ciência do banco pagador: o pagamento só pode cair no fluxo controlado pelo fundo.">trava de domicílio bancário</span>. O pagamento cai no fluxo que o fundo controla.</p></div>
+      <div class="pcard rv"><div class="ph">03 · LIMITE AUTOMÁTICO</div><p>Concentração por cedente calculada automaticamente pelo sistema, sinalizando de imediato quando a operação se aproxima ou ultrapassa o teto de risco.</p></div>
+    </div>
+    <div class="liciflow rv" data-flow>
+      <div class="lt">O novo fluxo · contratos públicos (licitações)</div>
+      <div class="flow">
+        <div class="node"><div class="nt">01 · PNCP</div><div class="nd">Contrato validado</div></div>
+        <div class="arrow"></div>
+        <div class="node"><div class="nt">02 · ICP-Brasil</div><div class="nd">Assinatura íntegra</div></div>
+        <div class="arrow"></div>
+        <div class="node"><div class="nt">03 · Transparência</div><div class="nd">Empenho Liquidado confirmado</div></div>
+        <div class="arrow"></div>
+        <div class="node"><div class="nt">04 · Trava</div><div class="nd">Domicílio bancário ativo</div></div>
+        <div class="arrow"></div>
+        <div class="node"><div class="nt">05 · Limite</div><div class="nd">Concentração dentro do teto</div></div>
+      </div>
+      <div class="branch">
+        <div class="b ok">✓ TUDO CONFIRMADO · LIBERAÇÃO NO MESMO DIA, SEM FRICÇÃO</div>
+        <div class="b no">✕ INCONSISTÊNCIA NO EMPENHO · DECLINADA OU DEVOLVIDA AO N1 EM 2 MIN</div>
+      </div>
+    </div>
+    <div class="reading">
+      <p class="rv">Não é um segundo parecer: é a adaptação do parecer para esse tipo de operação e segmento, com a mesma lógica de evidência dos 7 pilares calibrada para validar o ativo. Flexibilidade de processo, não burocracia nova.</p>
+    </div>
+    <div class="artefato rv">
+      <div class="at">Artefato · Parecer Técnico de Entrada (adaptação para o segmento)</div>
+      <ol>
+        <li>Status da operação: aprovada / reprovada</li>
+        <li>Evidência de liquidez: link da consulta oficial + status atual do empenho</li>
+        <li>Blindagem: notificação de cessão com ciência do banco pagador anexada</li>
+        <li>Limite de concentração: utilização atual e conclusão dentro dos parâmetros</li>
+        <li class="sint">Parecer sintético: "Constatei a liquidez do ativo via sistema e a trava bancária está ativa. Risco mitigado. Recomendo o processamento."</li>
+      </ol>
+    </div>
+    <div class="impact3">
+      <div class="i rv"><b>ANALISTA</b>Decisão sem julgamento de confiança: segue o checklist.</div>
+      <div class="i rv"><b>CLIENTE</b>Análise mais rápida, requisitos claros de conformidade.</div>
+      <div class="i rv"><b>FUNDO</b>Fim do risco de comprar ativo sem lastro, liberação no mesmo dia.</div>
+    </div>
+  </div>
+</section>
+
+<section id="resultados">
+  <div class="container">
+    <div class="eyebrow">06 · Implantação e resultados da Fase 1 · DMAIC: IMPROVE → CONTROL</div>
+    <h2>Documentar, treinar, testar, implantar. E mensurar.</h2>
+    <div class="reading">
+      <p class="rv">Documentei processos e manuais no Confluence, modelei os fluxos no Bizagi e criei POPs e materiais de treinamento.</p>
+      <div class="callout cyanline rv">
+        <div class="ct">TREINAMENTO</div>
+        <p>Ministrei todos os treinamentos, workshops e reciclagens do projeto, presenciais e por videochamada, do teste por amostragem à operação completa.</p>
+      </div>
+      <p class="rv">Dois meses de análise de dados e diagnóstico, um mês de testes por amostragem em carteiras selecionadas com critérios definidos junto a coordenadores e diretoria, aprovação, e implementação na operação completa, com três meses de mensuração dos resultados.</p>
+    </div>
+    <div class="sla-strip rv">Pela primeira vez, N1 e N2 operando dentro do SLA. O ganho não foi só velocidade: foi previsibilidade.</div>
+    <div class="wall five">
+      <div class="wcard rv"><div class="big">−45%</div><div class="fromto">45min &rarr; 25min</div><div class="wl">Tempo médio de análise N1, dentro do SLA de 30min</div><div class="scope">operação completa · 3 meses</div></div>
+      <div class="wcard rv"><div class="big">−54%</div><div class="fromto">11min &rarr; &lt;5min</div><div class="wl">Tempo médio de análise N2, dentro do SLA de 5min</div><div class="scope">operação completa · 3 meses</div></div>
+      <div class="wcard rv"><div class="big">&lt;3%</div><div class="fromto">antes: 11%</div><div class="wl">Desistência de operações em mesa (drop-off de proposta)</div><div class="scope">operação completa · 3 meses</div></div>
+      <div class="wcard rv"><div class="big">+8% / +14%</div><div class="fromto">novos · &gt;90 dias</div><div class="wl">Taxa de retenção de clientes, por faixa de cadastro</div><div class="scope">acompanhamento do projeto · 3 meses</div></div>
+      <div class="wcard rv"><div class="big">+6%</div><div class="fromto">receita</div><div class="wl">Nas carteiras ativas selecionadas e monitoradas do projeto</div><div class="scope">carteiras do projeto · 3 meses</div></div>
+    </div>
+    <div class="regua rv">E um ganho que não cabe em número: N1 e N2 passaram a avaliar a operação com a mesma régua.</div>
+  </div>
+</section>
+
+<section id="qualidade">
+  <div class="container">
+    <div class="eyebrow">07 · Fase 2 · Programa de Qualidade Operacional · DMAIC: CONTROL</div>
+    <h2>Processo novo sem controle repete erro em escala.</h2>
+    <div class="reading">
+      <p class="rv">Criei a monitoria de qualidade dos pareceres N1, um QA de decisão: scorecard de 0 a 100 sobre os mesmos 7 pilares do parecer, agora com pesos por criticidade definidos pelos dados.</p>
+    </div>
+    <div class="pesos rv">
+      <div class="peso-c"><span class="pn">Controladoria</span><span class="pv">peso 10</span></div>
+      <div class="peso-c"><span class="pn">Cobrança</span><span class="pv">peso 20</span></div>
+      <div class="peso-c"><span class="pn">Financeira</span><span class="pv">peso 20</span></div>
+      <div class="peso-c"><span class="pn">Cedente</span><span class="pv">peso 10</span></div>
+      <div class="peso-c"><span class="pn">Crédito</span><span class="pv">peso 20</span></div>
+      <div class="peso-c"><span class="pn">Taxa Efetiva</span><span class="pv">peso 20</span></div>
+      <div class="peso-c zero"><span class="pn">Favorável ou Não</span><span class="desc">Sensor comportamental: a omissão do posicionamento sinaliza insegurança decisória ou transferência da responsabilidade ao N2.</span><span class="pv">peso 0</span></div>
+    </div>
+    <div class="tbl rv">
+      <table>
+        <tr><th>Conceito por item</th><th>Efeito na nota</th><th>Critério</th></tr>
+        <tr><td class="mono efx-ok" data-label="Conceito">Conforme</td><td class="mono efx-ok" data-label="Efeito na nota">peso integral</td><td data-label="Critério">Claro, correto e coerente com o que o pilar exige.</td></tr>
+        <tr><td class="mono efx-mid" data-label="Conceito">Parcialmente conforme</td><td class="mono efx-mid" data-label="Efeito na nota">−50% do peso</td><td data-label="Critério">Falha leve, ausência não crítica ou dubiedade pontual.</td></tr>
+        <tr><td class="mono efx-bad" data-label="Conceito">Não conforme</td><td class="mono efx-bad" data-label="Efeito na nota">−100% do peso</td><td data-label="Critério">Erro crítico, informação importante ausente, dado errado ou sem lastro.</td></tr>
+      </table>
+    </div>
+    <div class="callout rv">
+      <div class="ct">REGRA-MESTRE · NÃO CONFORMIDADE GRAVE (NCG)</div>
+      <p>Quebra de regra de segurança, intencional, não intencional ou por imperícia, zera a avaliação inteira. Equivalente ao erro crítico zerador do mercado.</p>
+    </div>
+    <div class="reading">
+      <p class="rv">Dois meses de análise dos dados de qualidade e conformidade e de elaboração da metodologia, um mês de testes por amostragem. Os dados confirmaram a aderência ao novo desenho e revelaram a segunda camada: reincidência de erro concentrada em analistas específicos, sob condições equiparadas. A pergunta mudou de "o processo funciona?" para "por que erra quem erra?". Apresentei a diretoria e CEO: o programa virou o <b>Indicador de Qualidade Operacional</b>, com agenda semanal de avaliações e prazos de feedback.</p>
+    </div>
+    <div class="gov-grid">
+      <div>
+        <h3 style="margin-top:0">Ciclo de feedback · o Control em regime</h3>
+        <div class="ring-wrap rv">
+          <svg width="340" height="340" viewBox="0 0 340 340" role="img" aria-label="Ciclo: avaliação, liderança, feedback, reavaliação, tendência">
+            <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#22D3EE"/></marker></defs>
+            <circle cx="170" cy="170" r="112" fill="none" stroke="#22344F" stroke-width="1.5" stroke-dasharray="4 6"/>
+            <path d="M 170 58 A 112 112 0 0 1 276 136" fill="none" stroke="#22D3EE" stroke-width="1.5" marker-end="url(#arr)" opacity=".7"/>
+            <path d="M 282 170 A 112 112 0 0 1 236 260" fill="none" stroke="#22D3EE" stroke-width="1.5" marker-end="url(#arr)" opacity=".7"/>
+            <path d="M 202 276 A 112 112 0 0 1 104 260" fill="none" stroke="#22D3EE" stroke-width="1.5" marker-end="url(#arr)" opacity=".7"/>
+            <path d="M 74 226 A 112 112 0 0 1 62 140" fill="none" stroke="#22D3EE" stroke-width="1.5" marker-end="url(#arr)" opacity=".7"/>
+            <path d="M 84 104 A 112 112 0 0 1 148 62" fill="none" stroke="#22D3EE" stroke-width="1.5" marker-end="url(#arr)" opacity=".7"/>
+            <g font-family="JetBrains Mono,monospace" font-size="11" fill="#E8EEF7" text-anchor="middle">
+              <g><circle cx="170" cy="52" r="34" fill="#101A2E" stroke="#22344F"/><text x="170" y="56">AVALIAÇÃO</text></g>
+              <g><circle cx="285" cy="142" r="34" fill="#101A2E" stroke="#22344F"/><text x="285" y="146">LIDERANÇA</text></g>
+              <g><circle cx="240" cy="272" r="34" fill="#101A2E" stroke="#22344F"/><text x="240" y="276">FEEDBACK</text></g>
+              <g><circle cx="100" cy="272" r="34" fill="#101A2E" stroke="#22344F"/><text x="100" y="270">REAVA-</text><text x="100" y="283">LIAÇÃO</text></g>
+              <g><circle cx="55" cy="142" r="34" fill="#101A2E" stroke="#22344F"/><text x="55" y="146">TENDÊNCIA</text></g>
+            </g>
+          </svg>
+        </div>
+        <div class="ring-list">
+          <div class="qcard"><span class="qn">01</span>Avaliação por amostragem</div>
+          <div class="qcard"><span class="qn">02</span>Distribuição à liderança</div>
+          <div class="qcard"><span class="qn">03</span>Feedback caso a caso</div>
+          <div class="qcard"><span class="qn">04</span>Reavaliação do mesmo analista</div>
+          <div class="qcard"><span class="qn">05</span>Leitura de tendência e reincidência</div>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin-top:0">Indicador de Qualidade Operacional</h3>
+        <div class="chart rv" data-chart>
+          <div class="bars">
+            <div class="b"><span class="val">77</span><div class="fill" data-h="66"></div></div>
+            <div class="b"><span class="val">89</span><div class="fill" data-h="82"></div></div>
+            <div class="b"><span class="val">92</span><div class="fill" data-h="86"></div></div>
+            <div class="b meta"><span class="val">95</span><div class="fill" data-h="90"></div></div>
+          </div>
+          <div class="axis"><span>MÊS 1</span><span>MÊS 2</span><span>MÊS 3</span><span>META</span></div>
+        </div>
+        <p class="rv" style="font-size:14.5px">Além da nota: o ciclo estruturou feedbacks com evolução em rápida rampagem já nas primeiras rodadas, alimentou planos de desenvolvimento e deu à liderança base objetiva para as avaliações de desempenho.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="escala">
+  <div class="container">
+    <div class="eyebrow">08 · Escala com IA</div>
+    <h2>Monitoria que depende de uma pessoa não escala.</h2>
+    <div class="esc-grid">
+      <div class="reading">
+        <p class="rv">Eu era o único avaliador. Em colaboração com dev e produto, a metodologia que desenvolvi virou a base de treinamento de um agente de IA (machine learning): critérios, pesos, diretrizes, materiais de apoio e a linguagem dos apontamentos, para o agente avaliar com visão e comportamento próximos aos meus. Atuei como Key User do projeto, validando o comportamento do agente e acompanhando o desenvolvimento e a integração à Jestor, plataforma de gestão onde avaliações e feedbacks já circulavam com a liderança.</p>
+        <p class="rv">A metodologia nasceu do meu trabalho. O produto nasceu da colaboração.</p>
+      </div>
+      <div class="bound rv">
+        <div class="half mine">
+          <div class="bt">MINHA CONTRIBUIÇÃO</div>
+          <ul><li>Metodologia, critérios e pesos</li><li>Diretrizes e materiais de apoio</li><li>Linguagem dos apontamentos</li><li>Validação do comportamento do agente (Key User)</li></ul>
+        </div>
+        <div class="half team">
+          <div class="bt">TIME DE DEV E PRODUTO</div>
+          <ul><li>Agente de IA (machine learning)</li><li>Integração à plataforma Jestor</li><li>Distribuição automatizada à liderança</li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="iaflow">
+      <div class="n rv"><b>METODOLOGIA</b>Scorecard, critérios e linguagem desenvolvidos na fase manual</div>
+      <div class="n rv"><b>TREINAMENTO</b>Agente de IA treinado sobre a base metodológica</div>
+      <div class="n rv"><b>INTEGRAÇÃO</b>Avaliações automatizadas dentro da Jestor</div>
+      <div class="n rv"><b>OPERAÇÃO</b>Liderança recebe, aplica feedback e acompanha tendência</div>
+    </div>
+  </div>
+</section>
+
+<section id="linha">
+  <div class="container">
+    <div class="eyebrow">09 · Linha do tempo e papel</div>
+    <h2>Doze meses, um ciclo DMAIC completo.</h2>
+    <div class="reading"><p class="rv">A estrutura segue o DMAIC da minha formação em Lean Seis Sigma: problema e linha de base definidos antes da causa, causa antes da solução, e uma fase inteira dedicada a Control para sustentar o ganho, do POP ao indicador aprovado pelo CEO.</p></div>
+    <div class="tl12 rv">
+      <div class="months"><span>M1</span><span>M2</span><span>M3</span><span>M4</span><span>M5</span><span>M6</span><span>M7</span><span>M8</span><span>M9</span><span>M10</span><span>M11</span><span>M12</span></div>
+      <div class="track">
+        <i class="f1a"></i><i class="f1a"></i><i class="f1b"></i><i class="f1c"></i><i class="f1c"></i><i class="f1c"></i>
+        <i class="f2a"></i><i class="f2a"></i><i class="f2b"></i><i class="f2c"></i><i class="f2c"></i><i class="f2c"></i>
+      </div>
+      <div class="track-dmaic"><span class="dma">DEFINE·MEASURE·ANALYZE</span><span class="imp">IMPROVE</span><span class="ctl">CONTROL</span></div>
+      <div class="legend">
+        <div class="phase p1">
+          <div class="ph-t">FASE 1 · ESTEIRA N1/N2 (M1 A M6)</div>
+          <ul>
+            <li><span class="mm">M1–M2</span><span class="dot f1a"></span>Análise dos dados dos últimos 12 meses + diagnóstico de campo<span class="pdca">MEASURE · ANALYZE</span></li>
+            <li><span class="mm">M3</span><span class="dot f1b"></span>Testes por amostragem em carteiras selecionadas + aprovação da diretoria<span class="pdca">IMPROVE</span></li>
+            <li><span class="mm">M4–M6</span><span class="dot f1c"></span>Implementação na operação completa + mensuração dos resultados<span class="pdca">IMPROVE</span></li>
+            <li><span class="mm">M6</span><span class="dot f1c"></span>Padronização: POPs, fluxos, follow-up e SLA institucionalizado como indicador em tempo real<span class="pdca">CONTROL</span></li>
+          </ul>
+        </div>
+        <div class="phase p2">
+          <div class="ph-t">FASE 2 · QUALIDADE E ESCALA COM IA (M7 A M12)</div>
+          <ul>
+            <li><span class="mm">M7–M8</span><span class="dot f2a"></span>Análise dos dados de qualidade e conformidade + elaboração da metodologia<span class="pdca">CONTROL</span></li>
+            <li><span class="mm">M9</span><span class="dot f2b"></span>Testes por amostragem das avaliações<span class="pdca">CONTROL</span></li>
+            <li><span class="mm">M10–M12</span><span class="dot f2c"></span>Implementação e mensuração na operação completa<span class="pdca">CONTROL</span></li>
+            <li><span class="mm">M12</span><span class="dot f2c"></span>Indicador de Qualidade Operacional institucionalizado (CEO) + escala com IA<span class="pdca">CONTROL</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="marcos">
+        <span class="marco">M3 · APROVAÇÃO DA DIRETORIA</span>
+        <span class="marco">M6 · RESULTADOS DA FASE 1 MENSURADOS</span>
+        <span class="marco">M12 · INDICADOR INSTITUCIONALIZADO · CEO</span>
+      </div>
+    </div>
+    <div class="role-grid">
+      <div class="role mine rv">
+        <div class="rt">Meu papel</div>
+        <ul>
+          <li>Iniciativa, diagnóstico e auditoria da esteira</li>
+          <li>Redesenho dos fluxos e do protocolo antifraude</li>
+          <li>Criação dos 7 pilares e da metodologia de qualidade</li>
+          <li>Todos os treinamentos e workshops da operação</li>
+          <li>Key User da automação com IA</li>
+        </ul>
+      </div>
+      <div class="role team rv">
+        <div class="rt">Colaboração entre áreas</div>
+        <ul>
+          <li>CS · ação de voz do cliente</li>
+          <li>Dev/Produto · follow-up, agente de IA e integração Jestor</li>
+          <li>Gestores N1/N2 · critérios de testes e feedback</li>
+          <li>Diretoria e CEO · aprovação e institucionalização</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="transferencia">
+  <div class="container">
+    <div class="eyebrow">10 · Transferência direta</div>
+    <h2>O que este case leva para uma operação antifraude.</h2>
+    <div class="reading">
+      <p class="rv">Fila de alertas e esteira de crédito são o mesmo problema com nomes diferentes: volume, prazo, decisão auditável e qualidade como indicador.</p>
+    </div>
+    <div class="tbl rv">
+      <table class="bridge">
+        <tr><th>Neste case</th><th></th><th>Em Fraud Ops</th></tr>
+        <tr><td data-label="Neste case">Verificação proporcional ao risco por segmento e perfil</td><td class="arr">&#8646;</td><td data-label="Em Fraud Ops">Triagem risk-based de alertas por tipologia e score</td></tr>
+        <tr><td data-label="Neste case">Confiança no histórico substituída por verificação determinística do ativo</td><td class="arr">&#8646;</td><td data-label="Em Fraud Ops">Controles para abuso de confiança: contas maduras, mule accounts, ATO em contas antigas</td></tr>
+        <tr><td data-label="Neste case">Parecer em pilares, com evidência mínima obrigatória</td><td class="arr">&#8646;</td><td data-label="Em Fraud Ops">Disposition padronizada e parecer auditável de caso</td></tr>
+        <tr><td data-label="Neste case">Follow-up sem retorno ao fim da fila</td><td class="arr">&#8646;</td><td data-label="Em Fraud Ops">Requeue prioritário entre primeiro e segundo nível de análise (N1/N2)</td></tr>
+        <tr><td data-label="Neste case">Scorecard ponderado, NCG e ciclo de feedback</td><td class="arr">&#8646;</td><td data-label="Em Fraud Ops">QA de decisão com erro crítico zerador e calibração</td></tr>
+        <tr><td data-label="Neste case">Metodologia como base de um agente de IA</td><td class="arr">&#8646;</td><td data-label="Em Fraud Ops">Automação de monitoria e rotinas de QA com IA</td></tr>
+        <tr><td data-label="Neste case">Ciclo DMAIC completo, com Control em regime</td><td class="arr">&#8646;</td><td data-label="Em Fraud Ops">Melhoria contínua de regras e filas: tuning, calibração e pós-implementação mensurado</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer id="contato">
+  <div class="container">
+    <div class="author rv">
+      <div>
+        <div class="name">Paulo Melo · Prevenção à Fraude · Dados · Melhoria Contínua Lean</div>
+        <div class="role-l">Iniciativa autoral conduzida como Analista de Prevenção à Fraude em FIDC multicedente, em colaboração com CS, dev/produto e liderança, aprovada por diretoria e CEO.</div>
+      </div>
+      <div class="flinks">
+        <a href="https://wa.me/5584999097812" target="_blank" rel="noopener"><svg class="wa-ic" width="14" height="14" style="color:#25D366"><use href="#wa"/></svg>84 99909-7812</a>
+        <a href="mailto:melo.rpaulo@gmail.com">melo.rpaulo@gmail.com</a>
+        <a href="https://www.linkedin.com/in/paulo-ricardo-melo/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+    <p class="disclaimer">Case reconstruído de forma autoral e anonimizada. Nenhum dado de cliente, material interno ou informação sensível da instituição é reproduzido. Métricas referem-se a resultados verificados da iniciativa, mensurados nas janelas e escopos indicados em cada seção.</p>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+document.body.classList.add('js');
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var tb = document.getElementById('topbar');
+window.addEventListener('scroll', function(){
+  tb.classList.toggle('shrunk', window.scrollY > 200);
+}, {passive:true});
+
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      var el = e.target;
+      var sibs = Array.prototype.filter.call(el.parentNode.children, function(c){return c.classList && c.classList.contains('rv');});
+      var idx = sibs.indexOf(el);
+      el.style.transitionDelay = (reduced ? 0 : Math.min(idx,4)*60) + 'ms';
+      el.classList.add('in');
+      io.unobserve(el);
+    }
+  });
+},{threshold:.15});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
+
+var flowIO = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('inview');flowIO.unobserve(e.target);}
+  });
+},{threshold:.25});
+document.querySelectorAll('[data-flow]').forEach(function(el){flowIO.observe(el);});
+
+var chartIO = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.fill').forEach(function(f){
+        f.style.height = f.getAttribute('data-h') + '%';
+      });
+      chartIO.unobserve(e.target);
+    }
+  });
+},{threshold:.4});
+document.querySelectorAll('[data-chart]').forEach(function(el){chartIO.observe(el);});
+
+if(!reduced){
+  document.querySelectorAll('.kpi-row .num[data-count]').forEach(function(el){
+    var target = parseInt(el.getAttribute('data-count'),10);
+    var prefix = el.getAttribute('data-prefix')||'';
+    var suffix = el.getAttribute('data-suffix')||'';
+    var start = null, dur = 900;
+    function step(ts){
+      if(!start) start = ts;
+      var p = Math.min((ts-start)/dur,1);
+      var eased = 1-Math.pow(1-p,3);
+      el.textContent = prefix + Math.round(target*eased) + suffix;
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+var items = document.querySelectorAll('.acc-item');
+items.forEach(function(item){
+  var head = item.querySelector('.acc-head');
+  var body = item.querySelector('.acc-body');
+  head.addEventListener('click', function(){
+    var isOpen = item.classList.contains('open');
+    items.forEach(function(i){
+      i.classList.remove('open');
+      i.querySelector('.acc-body').style.maxHeight = null;
+      i.querySelector('.acc-head').setAttribute('aria-expanded','false');
+    });
+    if(!isOpen){
+      item.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+      head.setAttribute('aria-expanded','true');
+    }
+  });
+});
+
+var cta = document.getElementById('ctaContato');
+var rev = document.getElementById('contactReveal');
+cta.addEventListener('click', function(){
+  var open = rev.classList.toggle('open');
+  cta.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+
+var railLinks = document.querySelectorAll('.rail a');
+var secs = [];
+railLinks.forEach(function(a){
+  var id = a.getAttribute('href').slice(1);
+  var el = document.getElementById(id);
+  if(el) secs.push({a:a, el:el});
+});
+var railIO = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      railLinks.forEach(function(a){a.classList.remove('active');});
+      var m = secs.find(function(s){return s.el === e.target;});
+      if(m) m.a.classList.add('active');
+    }
+  });
+},{rootMargin:'-40% 0px -55% 0px'});
+secs.forEach(function(s){railIO.observe(s.el);});
+</script>
+</body>
+</html>
